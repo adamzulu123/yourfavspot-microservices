@@ -1,0 +1,20 @@
+server:
+  port: 8761
+spring:
+  application:
+    name: eureka-server
+
+eureka:
+  client:
+    fetch-registry: false
+    register-with-eureka: false
+
+management:
+  tracing:
+    sampling:
+      probability: 1.0  # Ustaw 1.0, jeśli chcesz śledzić wszystkie requesty
+    http:
+      server:
+        skip-pattern: "/eureka.*"
+  zipkin:
+    endpoint: http://localhost:9411/api/v2/spans

@@ -1,12 +1,14 @@
 server:
-  port: 8080
+  port: 8081
 
 spring:
   application:
-    name: user-service
+    name: fraud-service
 
+  #usually this should be another database server, but because I'm on mac and my memory (resources) is limited,
+  #I decided to use the same one as for the user-service.
   datasource:
-    url: jdbc:postgresql://localhost:5432/users
+    url: jdbc:postgresql://localhost:5432/fraud
     username: favspotuser
     password: password
     driver-class-name: org.postgresql.Driver
@@ -26,8 +28,9 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
-      fetch-registry: true
-      register-with-eureka: true
+    fetch-registry: true
+    register-with-eureka: true
+
 
 management:
   tracing:
@@ -35,5 +38,3 @@ management:
       probability: 1.0  # Ustaw 1.0, jeśli chcesz śledzić wszystkie requesty
   zipkin:
     endpoint: http://localhost:9411/api/v2/spans
-
-
