@@ -1,5 +1,7 @@
 package com.yourfavspot.user.Service;
 
+import com.yourfavspot.common.NotificationRequest;
+import com.yourfavspot.rabbit.RabbitMQMessageProducer;
 import com.yourfavspot.user.Model.FraudCheckResponse;
 import com.yourfavspot.user.Model.User;
 import com.yourfavspot.user.Model.UserRegistrationRequest;
@@ -13,6 +15,8 @@ import org.springframework.web.client.RestTemplate;
 public class UserService {
     private final UserRepository userRepository;
     private final RestTemplate restTemplate;
+    private final RabbitMQMessageProducer rabbitMQMessageProducer;
+
 
     public void registerUser(UserRegistrationRequest request) {
         User user = User.builder()
@@ -33,7 +37,21 @@ public class UserService {
             throw new IllegalStateException("Fraudster");
         }
 
-        // todo: send notification
+        // Przygotowanie powiadomienia, które ma trafić do RabbitMQ
+        NotificationRequest notificationRequest = new NotificationRequest(
+                user.getId(),
+                user.getEmail(),
+                "Welcome to the system!"
+        );
+
+        // Wysłanie powiadomienia do RabbitMQ (do wymiany fanout)
+        rabbitMQMessageProducer.publish(notificationRequest);
     }
 
+
+
+
+
+        // todo: send notification
 }
+

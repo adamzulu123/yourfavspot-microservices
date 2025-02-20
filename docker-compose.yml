@@ -37,6 +37,15 @@ services:
       - spring
     restart: unless-stopped
 
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"  # Port dla komunikacji AMQP -- tutaj application będzię podłączona do kolejki
+      - "15672:15672" #manamegnemt port -- console etc.
+    networks:
+      - spring
+
 networks:
   postgres:
     driver: bridge

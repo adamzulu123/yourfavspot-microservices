@@ -13,8 +13,5 @@ management:
   tracing:
     sampling:
       probability: 1.0  # Ustaw 1.0, jeśli chcesz śledzić wszystkie requesty
-    http:
-      server:
-        skip-pattern: "/eureka.*"
   zipkin:
     endpoint: http://localhost:9411/api/v2/spans

@@ -24,6 +24,12 @@ spring:
     show-sql: true
     open-in-view: false
 
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
 eureka:
   client:
     service-url:

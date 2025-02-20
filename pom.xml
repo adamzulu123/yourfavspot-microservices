@@ -15,6 +15,9 @@
     <module>user-service</module>
     <module>fraud</module>
     <module>eureka-server</module>
+      <module>rabbitmq</module>
+      <module>notification</module>
+      <module>common</module>
   </modules>
 
 
