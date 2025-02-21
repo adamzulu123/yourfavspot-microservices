@@ -28,6 +28,33 @@ services:
       - postgres
     restart: unless-stopped
 
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - mongodb
+
+  #panel mongo
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_MONGODB_PORT: 27017
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: password
+    ports:
+      - "9090:8081"  #mongo express wewnątrz kontenera zawsze działa na 8081
+    depends_on:
+      - mongo
+    networks:
+      - mongodb
+    restart: unless-stopped
+
   zipkin:
     container_name: zipkin
     image: openzipkin/zipkin
@@ -51,7 +78,10 @@ networks:
     driver: bridge
   spring:
     driver: bridge
+  mongodb:
+    driver: bridge
 
 volumes:
   postgres:
   pgadmin:
+  mongo-data:

@@ -1,0 +1,15 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: location-service
+
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/locationsdb
+
+logging:
+  level:
+    org.springframework.data.mongodb: DEBUG
+    reactor.core: DEBUG
