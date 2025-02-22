@@ -1,21 +1,30 @@
 package com.yourfavspot.user.Service;
 
+import com.yourfavspot.common.CheckLocationRequest;
 import com.yourfavspot.common.NotificationRequest;
+import com.yourfavspot.rabbit.RabbitMQConfig;
 import com.yourfavspot.rabbit.RabbitMQMessageProducer;
+import com.yourfavspot.user.Model.FavoriteLocation;
 import com.yourfavspot.user.Model.FraudCheckResponse;
 import com.yourfavspot.user.Model.User;
 import com.yourfavspot.user.Model.UserRegistrationRequest;
+import com.yourfavspot.user.Repository.FavoriteLocationRepository;
 import com.yourfavspot.user.Repository.UserRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import reactor.core.publisher.Mono;
 
+@Slf4j
 @AllArgsConstructor
 @Service
 public class UserService {
     private final UserRepository userRepository;
     private final RestTemplate restTemplate;
-    private final RabbitMQMessageProducer rabbitMQMessageProducer;
+    private final RabbitMQMessageProducer producer;
+    private final FavoriteLocationRepository favoriteLocationRepository;
 
 
     public void registerUser(UserRegistrationRequest request) {
@@ -37,6 +46,7 @@ public class UserService {
             throw new IllegalStateException("Fraudster");
         }
 
+        /* todo: poprawka tego pozniej aby wysyłac notification w poprawny sposob
         // Przygotowanie powiadomienia, które ma trafić do RabbitMQ
         NotificationRequest notificationRequest = new NotificationRequest(
                 user.getId(),
@@ -45,13 +55,20 @@ public class UserService {
         );
 
         // Wysłanie powiadomienia do RabbitMQ (do wymiany fanout)
-        rabbitMQMessageProducer.publish(notificationRequest);
+        //rabbitMQMessageProducer.publish(notificationRequest);
+
+         */
+    }
+
+
+    public void checkAndAddFavoriteLocation(Integer userId, String locationId) {
+        CheckLocationRequest request = new CheckLocationRequest(userId, locationId);
+        log.info("Sending location check request: userId={}, locationId={}", userId, locationId);
+        producer.publish(RabbitMQConfig.LOCATION_REQUEST_EXCHANGE, RabbitMQConfig.LOCATION_CHECK_ROUTING_KEY, request);
+        // Uwaga: Odpowiedź przyjdzie asynchronicznie do UserRabbitConsumer
     }
 
 
 
-
-
-        // todo: send notification
 }
 

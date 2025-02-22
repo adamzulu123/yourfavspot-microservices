@@ -35,6 +35,13 @@ public class LocationService {
         return locationRepository.findAll();
     }
 
+    public Mono<Boolean> checkLocationExists(String locationId) {
+        return locationRepository.existsById(locationId)
+                .doOnSuccess(exists -> log.info("Location {} exists: {}", locationId, exists))
+                .doOnError(e -> log.error("Error checking location {}: {}", locationId, e.getMessage()));
+    }
+
+
     private Mono<LocationModel> validateLocation(LocationModel locationModel) {
         if (locationModel == null) {
             return Mono.error(new IllegalArgumentException("Invalid location model"));

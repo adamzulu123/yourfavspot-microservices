@@ -14,7 +14,7 @@ import java.io.IOException; // Dla IOException
 @EnableRabbit
 @Service
 public class NotificationConsumer {
-    @RabbitListener(queues = RabbitMQConfig.QUEUE_NAME, messageConverter = "messageConverter", ackMode = "MANUAL")
+    @RabbitListener(queues = RabbitMQConfig.NOTIFICATION_QUEUE, messageConverter = "messageConverter", ackMode = "MANUAL")
     public void receiveMessage(NotificationRequest notificationRequest, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException {
         System.out.println("Received notification: " + notificationRequest.message());
         //channel.basicAck(tag, false); // Zakomentuj, aby wiadomość została w kolejce

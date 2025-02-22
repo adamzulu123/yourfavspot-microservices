@@ -9,6 +9,12 @@ spring:
     mongodb:
       uri: mongodb://localhost:27017/locationsdb
 
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest  # Domyślny użytkownik w RabbitMQ
+    password: guest  # Domyślne hasło w RabbitMQ
+
 logging:
   level:
     org.springframework.data.mongodb: DEBUG

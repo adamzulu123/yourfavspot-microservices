@@ -15,8 +15,8 @@ public class RabbitMQMessageProducer {
         this.amqpTemplate = amqpTemplate;
     }
 
-    public void publish(Object payload) {
-        log.info("Publishing to using routingKey . Payload: {}", payload);
-        amqpTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, "", payload);  // Pusty routing key
+    public void publish(String exchange, String routingKey, Object payload) {
+        log.info("Publishing to exchange: {} with routingKey: {}. Payload: {}", exchange, routingKey, payload);
+        amqpTemplate.convertAndSend(exchange, routingKey, payload);
     }
 }
