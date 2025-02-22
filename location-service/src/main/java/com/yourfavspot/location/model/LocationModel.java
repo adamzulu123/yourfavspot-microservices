@@ -17,6 +17,8 @@ public class LocationModel {
 
     @MongoId
     private String id;
+    private Integer userId; //jeśli null to publiczna lokalizacja
+    private boolean isPersonal; //takie upewnienie, że publiczna lub personalna
     private String name;
     private String description;
     private String category;

@@ -1,5 +1,6 @@
 package com.yourfavspot.user.Service;
 
+import com.yourfavspot.common.AddLocationRequest;
 import com.yourfavspot.common.CheckLocationRequest;
 import com.yourfavspot.common.NotificationRequest;
 import com.yourfavspot.rabbit.RabbitMQConfig;
@@ -66,6 +67,19 @@ public class UserService {
         log.info("Sending location check request: userId={}, locationId={}", userId, locationId);
         producer.publish(RabbitMQConfig.LOCATION_REQUEST_EXCHANGE, RabbitMQConfig.LOCATION_CHECK_ROUTING_KEY, request);
         // Uwaga: Odpowiedź przyjdzie asynchronicznie do UserRabbitConsumer
+    }
+
+    //adding new personal location
+    public void addNewLocation(Integer userId, AddLocationRequest request) {
+        AddLocationRequest message = new AddLocationRequest(
+                userId,
+                request.name(),
+                request.description(),
+                request.type(),
+                request.coordinates()
+        );
+        log.info("Sending location request: userId={}, locationId={}", userId, request.name());
+        producer.publish(RabbitMQConfig.LOCATION_ADD_EXCHANGE, RabbitMQConfig.LOCATION_ADD_ROUTING_KEY, message);
     }
 
 

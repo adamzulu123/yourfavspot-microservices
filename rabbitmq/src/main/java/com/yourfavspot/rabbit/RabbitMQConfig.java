@@ -26,21 +26,27 @@ public class RabbitMQConfig {
     public static final String USER_RESPONSE_EXCHANGE = "user.response.exchange";
     public static final String USER_RESPONSE_ROUTING_KEY = "user.response";
 
+
+    //adding new personal location
+    public static final String LOCATION_ADD_QUEUE = "location.add.queue";
+    public static final String LOCATION_ADD_EXCHANGE = "location.add.exchange";
+    public static final String LOCATION_ADD_ROUTING_KEY = "location.add";
+
     // Kolejka do powiadomień
     @Bean
     public Queue notificationQueue() {
         return new Queue(NOTIFICATION_QUEUE, true); // Trwała kolejka
     }
-
     @Bean
     public FanoutExchange notificationExchange() {
         return new FanoutExchange(NOTIFICATION_EXCHANGE);
     }
-
     @Bean
     public Binding notificationBinding(@Qualifier("notificationQueue") Queue queue, FanoutExchange notificationExchange) {
         return BindingBuilder.bind(queue).to(notificationExchange);
     }
+
+
 
     // Kolejka żądań location service
     @Bean
@@ -67,6 +73,24 @@ public class RabbitMQConfig {
                                        @Qualifier("locationRequestExchange") DirectExchange exchange) {
         return BindingBuilder.bind(queue).to(exchange).with(LOCATION_BULK_ROUTING_KEY);
     }
+
+    //Nowa kolejka do dodawnaia nowych personalnych lokaluzacji
+    @Bean
+    public Queue locationAddQueue() {
+        return new Queue(LOCATION_ADD_QUEUE, true);
+    }
+    @Bean
+    public DirectExchange locationAddExchange() {
+        return new DirectExchange(LOCATION_ADD_EXCHANGE);
+    }
+    @Bean
+    public Binding locationAddBinding(@Qualifier("locationAddQueue") Queue queue,
+                                      @Qualifier("locationAddExchange") DirectExchange exchange) {
+        return BindingBuilder.bind(queue).to(exchange).with(LOCATION_ADD_ROUTING_KEY);
+    }
+
+
+
 
     // Kolejka dla odpowiedzi do User Service
     @Bean
