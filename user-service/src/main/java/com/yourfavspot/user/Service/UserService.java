@@ -5,6 +5,7 @@ import com.yourfavspot.common.CheckLocationRequest;
 import com.yourfavspot.common.NotificationRequest;
 import com.yourfavspot.rabbit.RabbitMQConfig;
 import com.yourfavspot.rabbit.RabbitMQMessageProducer;
+import com.yourfavspot.rabbit.RabbitMQMessageReactiveProducer;
 import com.yourfavspot.user.Model.FavoriteLocation;
 import com.yourfavspot.user.Model.FraudCheckResponse;
 import com.yourfavspot.user.Model.User;
@@ -25,6 +26,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final RestTemplate restTemplate;
     private final RabbitMQMessageProducer producer;
+    private final RabbitMQMessageReactiveProducer reactiveProducer;
     private final FavoriteLocationRepository favoriteLocationRepository;
 
 
@@ -69,6 +71,18 @@ public class UserService {
         // Uwaga: Odpowiedź przyjdzie asynchronicznie do UserRabbitConsumer
     }
 
+    //reactive adding location do favorite
+    public Mono<Void> checkAndAddFavoriteLocationReactive(Integer userId, String locationId) {
+        CheckLocationRequest request = new CheckLocationRequest(userId, locationId);
+        log.info("Sending location check request: userId={}, locationId={}", userId, locationId);
+        return reactiveProducer.publishReactive(RabbitMQConfig.LOCATION_REQUEST_EXCHANGE,
+                RabbitMQConfig.LOCATION_CHECK_ROUTING_KEY, request)
+                .doOnSuccess(unused -> log.info("Successfully sent location check request for userId={}, locationId={}", userId, locationId))
+                .doOnError(error -> log.error("Error sending location check request for userId={}, locationId={}", userId, locationId, error));
+    }
+
+
+    //todo : zmienić na reaktywą komunikację przez reactor rabbitmq
     //adding new personal location
     public void addNewLocation(Integer userId, AddLocationRequest request) {
         AddLocationRequest message = new AddLocationRequest(

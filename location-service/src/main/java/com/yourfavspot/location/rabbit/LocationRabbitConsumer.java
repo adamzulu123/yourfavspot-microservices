@@ -23,6 +23,7 @@ public class LocationRabbitConsumer {
     private final LocationService locationService;
     private final RabbitMQMessageProducer producer;
 
+    /* //zastapione za pomocą reactor rabbitmq
     @RabbitListener(queues = RabbitMQConfig.LOCATION_REQUEST_QUEUE)
     public void handleLocationCheckRequest(CheckLocationRequest request) {
         log.info("Received location check request: userId={}, locationId={}", request.userId(), request.locationId());
@@ -32,7 +33,9 @@ public class LocationRabbitConsumer {
                     producer.publish(RabbitMQConfig.USER_RESPONSE_EXCHANGE, RabbitMQConfig.USER_RESPONSE_ROUTING_KEY, response);
                 });
     }
+     */
 
+    //todo:  zmiana tego na komunikację reatywną - reactor rabbitmq
     @RabbitListener(queues = RabbitMQConfig.LOCATION_ADD_QUEUE)
     public void handleLocationAddRequest(AddLocationRequest request) {
         log.info("Received add location request: userId={}, name={}", request.userId(), request.name());

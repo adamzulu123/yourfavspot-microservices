@@ -7,9 +7,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import org.springframework.amqp.core.AmqpTemplate;
+
+
 @Slf4j
 public class RabbitMQMessageProducer {
     private final AmqpTemplate amqpTemplate;
+
 
     public RabbitMQMessageProducer(AmqpTemplate amqpTemplate) {
         this.amqpTemplate = amqpTemplate;
@@ -19,4 +22,5 @@ public class RabbitMQMessageProducer {
         log.info("Publishing to exchange: {} with routingKey: {}. Payload: {}", exchange, routingKey, payload);
         amqpTemplate.convertAndSend(exchange, routingKey, payload);
     }
+
 }

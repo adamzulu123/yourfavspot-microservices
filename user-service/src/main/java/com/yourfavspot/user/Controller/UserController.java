@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 @Slf4j
 @AllArgsConstructor
@@ -31,6 +32,15 @@ public class UserController {
         return ResponseEntity.ok("Request to check and add favorite location sent successfully");
     }
 
+    //reactive adding new fav loc
+    @PostMapping("/{userId}/reactive")
+    public Mono<ResponseEntity<String>> addFavoriteLocationRec(@PathVariable("userId") Integer userId,
+                                                               @RequestParam("locationId") String locationId){
+        return userService.checkAndAddFavoriteLocationReactive(userId, locationId)
+                .then(Mono.just(ResponseEntity.ok("Request to check and add favorite location sent successfully")));
+    }
+
+    //todo: reaktywnie do zrobienia - reactor rabbitmq
     //endpoint do dodawania nowej lokalizcji (personalnej użytkownika).
     @PostMapping("/{userId}/addLocation")
     public ResponseEntity<String> addPersonalLocation(@PathVariable("userId") Integer userId,
