@@ -24,4 +24,5 @@ public class LocationModel {
     private String category;
     @GeoSpatialIndexed
     private double[] location;
+
 }

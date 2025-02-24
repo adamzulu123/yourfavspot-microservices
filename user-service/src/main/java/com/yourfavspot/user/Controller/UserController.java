@@ -24,6 +24,32 @@ public class UserController {
         userService.registerUser(registrationRequest);
     }
 
+
+    //reactive adding new fav loc
+    @PostMapping("/{userId}/addFavoriteLocation")
+    public Mono<ResponseEntity<String>> addFavoriteLocationRec(@PathVariable("userId") Integer userId,
+                                                               @RequestParam("locationId") String locationId){
+        return userService.checkAndAddFavoriteLocationReactive(userId, locationId)
+                .then(Mono.just(ResponseEntity.ok("Request to check and add favorite location sent successfully")));
+    }
+
+    //endpoint do dodawania nowej lokalizcji (personalnej użytkownika) -reaktywnie
+    @PostMapping("/{userId}/addLocation")
+    public Mono<ResponseEntity<String>> addPersonalLocation(@PathVariable("userId") Integer userId,
+                                                            @RequestBody AddLocationRequest addLocationRequest){
+        return userService.addNewLocationReactive(userId, addLocationRequest)
+                .then(Mono.just(ResponseEntity.ok("Request to add location sent successfully")));
+    }
+
+    /*
+    // dwa aktualnie nie aktywne endpointy wczesniej uzywane do komunikacji synchronicznej
+
+    public ResponseEntity<String> addPersonalLocation(@PathVariable("userId") Integer userId,
+                                                      @RequestBody AddLocationRequest addLocationRequest) {
+        log.info("Adding personal location: {} for user: {}", addLocationRequest, userId);
+        userService.addNewLocation(userId, addLocationRequest);
+        return ResponseEntity.ok("Request to add personal location sent successfully");
+    }
     //endpoint do dodawania istniejącej (np. publicznej lokalizacji do ulubionych)
     @PostMapping("/{userId}/favorite-locations")
     public ResponseEntity<String> addFavoriteLocation(@PathVariable("userId") Integer userId,
@@ -31,24 +57,7 @@ public class UserController {
         userService.checkAndAddFavoriteLocation(userId, locationId);
         return ResponseEntity.ok("Request to check and add favorite location sent successfully");
     }
-
-    //reactive adding new fav loc
-    @PostMapping("/{userId}/reactive")
-    public Mono<ResponseEntity<String>> addFavoriteLocationRec(@PathVariable("userId") Integer userId,
-                                                               @RequestParam("locationId") String locationId){
-        return userService.checkAndAddFavoriteLocationReactive(userId, locationId)
-                .then(Mono.just(ResponseEntity.ok("Request to check and add favorite location sent successfully")));
-    }
-
-    //todo: reaktywnie do zrobienia - reactor rabbitmq
-    //endpoint do dodawania nowej lokalizcji (personalnej użytkownika).
-    @PostMapping("/{userId}/addLocation")
-    public ResponseEntity<String> addPersonalLocation(@PathVariable("userId") Integer userId,
-                                                      @RequestBody AddLocationRequest addLocationRequest) {
-        log.info("Adding personal location: {} for user: {}", addLocationRequest, userId);
-        userService.addNewLocation(userId, addLocationRequest);
-        return ResponseEntity.ok("Request to add personal location sent successfully");
-    }
+     */
 
 }
 

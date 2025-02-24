@@ -63,11 +63,11 @@ public class UserService {
          */
     }
 
-
+    //sychronicznie - klasyczna komunkacja - teraz nie działa bo kolejka uzywana jest do projectreactor
     public void checkAndAddFavoriteLocation(Integer userId, String locationId) {
         CheckLocationRequest request = new CheckLocationRequest(userId, locationId);
         log.info("Sending location check request: userId={}, locationId={}", userId, locationId);
-        producer.publish(RabbitMQConfig.LOCATION_REQUEST_EXCHANGE, RabbitMQConfig.LOCATION_CHECK_ROUTING_KEY, request);
+        //producer.publish(RabbitMQConfig.LOCATION_REQUEST_EXCHANGE, RabbitMQConfig.LOCATION_CHECK_ROUTING_KEY, request);
         // Uwaga: Odpowiedź przyjdzie asynchronicznie do UserRabbitConsumer
     }
 
@@ -83,7 +83,23 @@ public class UserService {
 
 
     //todo : zmienić na reaktywą komunikację przez reactor rabbitmq
-    //adding new personal location
+    //adding new personal location - reactive
+    public Mono<Void> addNewLocationReactive(Integer userId, AddLocationRequest request) {
+        AddLocationRequest message = new AddLocationRequest(
+                userId,
+                request.name(),
+                request.description(),
+                request.type(),
+                request.coordinates()
+        );
+        return reactiveProducer.publishReactive(RabbitMQConfig.LOCATION_ADD_EXCHANGE,
+                RabbitMQConfig.LOCATION_ADD_ROUTING_KEY, message)
+                .doOnSuccess(unused -> log.info("Successfully sent request to add new location to the map by user: ={}, message={}",
+                        userId, message))
+                .doOnError(error -> log.error("Error sending request to add new location:", error));
+    }
+
+    //sychronicznie - aktualnie nie działa bo z tym serwisem chcemy komunikację asychroniczną
     public void addNewLocation(Integer userId, AddLocationRequest request) {
         AddLocationRequest message = new AddLocationRequest(
                 userId,
@@ -93,7 +109,7 @@ public class UserService {
                 request.coordinates()
         );
         log.info("Sending location request: userId={}, locationId={}", userId, request.name());
-        producer.publish(RabbitMQConfig.LOCATION_ADD_EXCHANGE, RabbitMQConfig.LOCATION_ADD_ROUTING_KEY, message);
+        //producer.publish(RabbitMQConfig.LOCATION_ADD_EXCHANGE, RabbitMQConfig.LOCATION_ADD_ROUTING_KEY, message);
     }
 
 

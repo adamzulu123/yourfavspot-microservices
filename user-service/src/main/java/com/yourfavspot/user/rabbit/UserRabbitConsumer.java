@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
+// tutaj była synchroniczna obługa przez klasyczne rabbitmq, jednak narazie używam tej reaktywnej przez reactor rabbitmq
+/*
 @Slf4j
 @EnableRabbit
 @Service
@@ -65,3 +67,5 @@ public class UserRabbitConsumer {
     }
 
 }
+
+ */

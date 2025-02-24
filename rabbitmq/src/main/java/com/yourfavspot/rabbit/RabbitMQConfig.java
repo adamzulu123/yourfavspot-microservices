@@ -38,7 +38,7 @@ public class RabbitMQConfig {
     public static final String USER_RESPONSE_QUEUE_REACTOR = "user.response.queue.reactor";
     public static final String USER_RESPONSE_EXCHANGE_REACTOR = "user.response.exchange.reactor";
     public static final String USER_RESPONSE_ROUTING_KEY_REACTOR = "user.response.reactor";
-    public static final String USER_RESPONSE_ADD_ROUTING_KEY_REACTOR = "user.response.reactor.add";
+    public static final String USER_RESPONSE_ADD_ROUTING_KEY_REACTOR = "user.response.add.reactor";
 
     //adding new personal location
     public static final String LOCATION_ADD_QUEUE = "location.add.queue";
@@ -89,7 +89,10 @@ public class RabbitMQConfig {
         return BindingBuilder.bind(queue).to(exchange).with(LOCATION_BULK_ROUTING_KEY);
     }
 
-    //Nowa kolejka do dodawnaia nowych personalnych lokaluzacji
+
+
+    //Nowa kolejka do dodawnaia nowych personalnych lokaluzacji - używaliśmy do komunikacji klasycznej
+    //teraz zmieniam na reaktywną z reactor rabbitmq
     @Bean
     public Queue locationAddQueue() {
         return new Queue(LOCATION_ADD_QUEUE, true);
@@ -143,11 +146,17 @@ public class RabbitMQConfig {
     //albo możemy sobie zwróić tutaj liste bindingów i tym razem użyje tego dla mniejszej ilosci kodu
     //todo: sprawdzić czy działa !!!
     @Bean
-    public List<Binding> userResponseBindingReactor(@Qualifier("userResponseQueueReactor") Queue queue,
+    public Binding userResponseBindingReactor(@Qualifier("userResponseQueueReactor") Queue queue,
                                                     @Qualifier("userResponseExchangeReactor") DirectExchange exchange) {
        Binding binding1 = BindingBuilder.bind(queue).to(exchange).with(USER_RESPONSE_ROUTING_KEY_REACTOR);
-       Binding binding2 = BindingBuilder.bind(queue).to(exchange).with(USER_RESPONSE_ADD_ROUTING_KEY_REACTOR);
-       return Arrays.asList(binding1, binding2);
+       //Binding binding2 = BindingBuilder.bind(queue).to(exchange).with(USER_RESPONSE_ADD_ROUTING_KEY_REACTOR);
+       //return Arrays.asList(binding1, binding2);
+        return binding1;
+    }
+    @Bean
+    public Binding userResponseBindingAddReactor(@Qualifier("userResponseQueueReactor") Queue queue,
+                                                 @Qualifier("userResponseExchangeReactor") DirectExchange exchange){
+        return BindingBuilder.bind(queue).to(exchange).with(USER_RESPONSE_ADD_ROUTING_KEY_REACTOR);
     }
 
 
