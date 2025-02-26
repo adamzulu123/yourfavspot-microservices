@@ -2,12 +2,17 @@ package com.yourfavspot.location.service;
 
 
 import com.yourfavspot.location.model.LocationModel;
+import com.yourfavspot.location.model.LocationVisibility;
 import com.yourfavspot.location.repository.LocationRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.nio.channels.FileChannel;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Slf4j
 @AllArgsConstructor
@@ -24,12 +29,55 @@ public class LocationService {
     }
 
     public Mono<LocationModel> getLocation(String id) {
-        return locationRepository.findById(id);
+        return locationRepository.findById(id)
+                .flatMap(location -> {
+                    /*
+                    if(location.getVisibility() == LocationVisibility.PRIVATE && !location.getUserId().equals(userId)){
+                        return Mono.empty(); //zwracamy FORBIDDEN bo użykownik ani nie jest właścicielem
+                    }
+                    if (location.getVisibility() == LocationVisibility.SHARED && !location.getSharedWith().contains(userId)) {
+                        return Mono.empty(); //Forbidden, jeśli nie jest na liście udostępnionych
+                    }
+                     */
+                    return Mono.just(location);
+                })
+                .doOnError(e -> log.error("Error retrieving location: {}", e.getMessage()));
     }
 
-    public Mono<Void> deleteLocation(String id) {
-        return locationRepository.deleteById(id);
+    public Flux<LocationModel> getAllUserLocations(Integer userId) {
+        return locationRepository.findAllByUserIdOrSharedWithContains(userId)
+                .doOnError(e -> log.error("Error retrieving user locations: {}", e.getMessage()));
     }
+
+    public Mono<Boolean> deleteLocation(String id) {
+        return locationRepository.findById(id)
+                .flatMap(location -> locationRepository.deleteById(id).then(Mono.just(true)))
+                .defaultIfEmpty(false);
+    }
+
+    //todo: zmiana istniejących lokalizacji - dokończyć!
+    public Mono<LocationModel> updateLocation(String id, LocationModel locationModel) {
+        return locationRepository.findById(id)
+                .flatMap(existingLocation -> {
+                    existingLocation.setName(locationModel.getName());
+                    existingLocation.setDescription(locationModel.getDescription());
+                    existingLocation.setCategory(locationModel.getCategory());
+                    existingLocation.setUpdatedAt(LocalDateTime.now());
+                    return locationRepository.save(existingLocation);
+
+                })
+                .switchIfEmpty(Mono.empty())
+                .onErrorResume(e -> {
+                    log.error("Error updating location: {}", e.getMessage());
+                    return Mono.empty();
+                });
+    }
+
+
+    // todo: udostepnianie lokalizacji innym i usuwanie udostepniania
+
+
+
 
     public Flux<LocationModel> getAllLocations() {
         return locationRepository.findAll();
@@ -41,7 +89,7 @@ public class LocationService {
                 .doOnError(e -> log.error("Error checking location {}: {}", locationId, e.getMessage()));
     }
 
-
+    //validacja przy dodawaniu lokalizacji
     private Mono<LocationModel> validateLocation(LocationModel locationModel) {
         if (locationModel == null) {
             return Mono.error(new IllegalArgumentException("Invalid location model"));
@@ -62,4 +110,6 @@ public class LocationService {
 
         return Mono.just(locationModel);
     }
+
+
 }
