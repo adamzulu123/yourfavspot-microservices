@@ -1,6 +1,7 @@
 package com.yourfavspot.user.Controller;
 
 import com.yourfavspot.common.AddLocationRequest;
+import com.yourfavspot.user.Model.UserDto;
 import com.yourfavspot.user.Model.UserRegistrationRequest;
 import com.yourfavspot.user.Service.UserService;
 import lombok.AllArgsConstructor;
@@ -18,11 +19,27 @@ public class UserController {
 
     private final UserService userService;
 
+    @PostMapping("/registerDto")
+    public ResponseEntity<String> registerUser(@RequestBody UserDto userDto) {
+        boolean success = userService.registerUserDto(userDto);
+        if (success) {
+            return ResponseEntity.ok("User registered successfully");
+        }
+        else{
+            return ResponseEntity.status(500).body("Registration failed");
+        }
+    }
+
+
+
+    /*
     @PostMapping("/register")
     public void registerUser(@RequestBody UserRegistrationRequest registrationRequest) {
         log.info("Registering user: {}", registrationRequest);
         userService.registerUser(registrationRequest);
     }
+
+     */
 
 
     //reactive adding new fav loc

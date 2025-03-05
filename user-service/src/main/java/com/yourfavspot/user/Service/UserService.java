@@ -6,15 +6,13 @@ import com.yourfavspot.common.NotificationRequest;
 import com.yourfavspot.rabbit.RabbitMQConfig;
 import com.yourfavspot.rabbit.RabbitMQMessageProducer;
 import com.yourfavspot.rabbit.RabbitMQMessageReactiveProducer;
-import com.yourfavspot.user.Model.FavoriteLocation;
-import com.yourfavspot.user.Model.FraudCheckResponse;
-import com.yourfavspot.user.Model.User;
-import com.yourfavspot.user.Model.UserRegistrationRequest;
+import com.yourfavspot.user.Model.*;
 import com.yourfavspot.user.Repository.FavoriteLocationRepository;
 import com.yourfavspot.user.Repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import reactor.core.publisher.Mono;
@@ -28,8 +26,10 @@ public class UserService {
     private final RabbitMQMessageProducer producer;
     private final RabbitMQMessageReactiveProducer reactiveProducer;
     private final FavoriteLocationRepository favoriteLocationRepository;
+    private final KeycloakAdminClient keycloakAdminClient;
+    private final PasswordEncoder passwordEncoder;
 
-
+    /*
     public void registerUser(UserRegistrationRequest request) {
         User user = User.builder()
                 .firstName(request.firstName())
@@ -49,7 +49,7 @@ public class UserService {
             throw new IllegalStateException("Fraudster");
         }
 
-        /* todo: poprawka tego pozniej aby wysyłac notification w poprawny sposob
+        // todo: poprawka tego pozniej aby wysyłac notification w poprawny sposob
         // Przygotowanie powiadomienia, które ma trafić do RabbitMQ
         NotificationRequest notificationRequest = new NotificationRequest(
                 user.getId(),
@@ -60,7 +60,27 @@ public class UserService {
         // Wysłanie powiadomienia do RabbitMQ (do wymiany fanout)
         //rabbitMQMessageProducer.publish(notificationRequest);
 
-         */
+
+    }
+    */
+
+    public boolean registerUserDto (UserDto userDto) {
+        boolean createdkeycloak = keycloakAdminClient.createUser(userDto);
+        if(!createdkeycloak) {
+            log.error("Could not create keycloak user");
+            return false;
+        }
+
+        User user = User.builder()
+                .firstName(userDto.getFirstName())
+                .lastName(userDto.getLastName())
+                .email(userDto.getEmail())
+                .username(userDto.getUsername() != null ? userDto.getUsername() : userDto.getEmail())
+                .enabled(userDto.isEnabled())
+                .build();
+
+        userRepository.save(user);
+        return true;
     }
 
     //sychronicznie - klasyczna komunkacja - teraz nie działa bo kolejka uzywana jest do projectreactor

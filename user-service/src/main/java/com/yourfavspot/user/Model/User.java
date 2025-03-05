@@ -26,6 +26,9 @@ public class User {
     private String firstName;
     private String lastName;
     private String email;
-    private String password;
+    private String username;
+    //keycloak przejmuje autentykację - zapisujemy hasło w postaci zaszyfrowanej
+    //private String password;
+    private Boolean enabled;
 
 }

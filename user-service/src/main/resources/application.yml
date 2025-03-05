@@ -5,6 +5,12 @@ spring:
   application:
     name: user-service
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8091/realms/your-realm
+
   datasource:
     url: jdbc:postgresql://localhost:5432/users
     username: favspotuser
@@ -41,5 +47,14 @@ management:
       probability: 1.0  # Ustaw 1.0, jeśli chcesz śledzić wszystkie requesty
   zipkin:
     endpoint: http://localhost:9411/api/v2/spans
+
+keycloak:
+  realm: your-realm
+  admin-url: http://localhost:8091
+  token-url: http://localhost:8091/realms/your-realm/protocol/openid-connect/token
+  admin-username: admin
+  admin-password: admin
+  client-id: admin-cli
+
 
 
