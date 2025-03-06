@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -20,7 +22,12 @@ public class LocationController {
     private final LocationService locationService;
 
     @PostMapping("/create")
-    public Mono<ResponseEntity<LocationModel>> createLocation(@RequestBody LocationModel locationModel) {
+    public Mono<ResponseEntity<LocationModel>> createLocation(@RequestBody LocationModel locationModel,
+                                                                @AuthenticationPrincipal Jwt jwt) {
+
+        String userId = jwt.getClaim("sub");  // No parsing needed, just use the string directly
+        locationModel.setUserId(userId);
+
         return locationService.createLocation(locationModel)
                 //tworzymy status 201 (OK) i w cele zwracamy zapisany obiekt location
                 .map(location -> ResponseEntity.status(HttpStatus.CREATED).body(location))

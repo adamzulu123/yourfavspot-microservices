@@ -5,6 +5,12 @@ spring:
   application:
     name: location-service
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8091/realms/your-realm
+
   data:
     mongodb:
       uri: mongodb://localhost:27017/locationsdb

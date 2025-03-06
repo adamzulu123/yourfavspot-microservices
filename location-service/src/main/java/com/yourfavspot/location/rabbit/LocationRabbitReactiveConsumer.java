@@ -94,7 +94,7 @@ public class LocationRabbitReactiveConsumer {
                     }
                     log.info("Received add location request: {}", request);
                     LocationModel location = new LocationModel();
-                    location.setUserId(request.userId());
+                    location.setUserId(request.userId().toString());
                     location.setName(request.name());
                     location.setDescription(request.description());
                     location.setCategory(request.type());

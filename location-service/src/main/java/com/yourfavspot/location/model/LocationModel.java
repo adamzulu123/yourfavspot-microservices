@@ -16,15 +16,15 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
-@Document(collection = "locations")
+@Document(collection = "locations2")
 @NoArgsConstructor
 public class LocationModel {
 
     @MongoId
     private String id;
-    private Integer userId; //jeśli null to publiczna lokalizacja - mówi kto utworzył lokalizację
+    private String userId; //jeśli null to publiczna lokalizacja - mówi kto utworzył lokalizację
     private LocationVisibility visibility;
-    private List<Integer> sharedWith;
+    private List<String> sharedWith;
     private boolean isPersonal; //takie upewnienie, że publiczna lub personalna
     private String name;
     private String description;
