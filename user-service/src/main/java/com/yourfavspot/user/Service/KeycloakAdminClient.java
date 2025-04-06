@@ -59,6 +59,7 @@ public class KeycloakAdminClient {
     public boolean createUser(UserDto userDto) {
         try {
             String accessToken = getAccessToken();
+            log.info("Udało się pobrać token dostępu z Keycloak");
 
             // Tworzenie mapy zgodnej z UserRepresentation
             Map<String, Object> keycloakUser = new HashMap<>();
@@ -82,6 +83,7 @@ public class KeycloakAdminClient {
                     .toBodilessEntity()
                     .block();
 
+            log.info("Użytkownik {} pomyślnie utworzony w Keycloak", userDto.getEmail());
             return true;
         } catch (WebClientResponseException e) {
             log.error("Błąd HTTP: {} - {}", e.getStatusCode(), e.getResponseBodyAsString());

@@ -36,17 +36,18 @@ spring:
 
 eureka:
   client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka
-      fetch-registry: true
-      register-with-eureka: true
+    enabled: false
+  #service-url:
+    #  defaultZone: http://localhost:8761/eureka
+    #  fetch-registry: true
+    #  register-with-eureka: true
 
-management:
-  tracing:
-    sampling:
-      probability: 1.0  # Ustaw 1.0, jeśli chcesz śledzić wszystkie requesty
-  zipkin:
-    endpoint: http://localhost:9411/api/v2/spans
+#management:
+#  tracing:
+#    sampling:
+#      probability: 1.0  # Ustaw 1.0, jeśli chcesz śledzić wszystkie requesty
+#  zipkin:
+#    endpoint: http://localhost:9411/api/v2/spans
 
 keycloak:
   realm: your-realm
