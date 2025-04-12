@@ -23,7 +23,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable()) // Jeśli nie masz formularzy, można zostawić wyłączone
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/user/registerDto").permitAll() // Endpointy publiczne
+                        .requestMatchers("/api/v1/user/registerDto", "/api/v1/user/login").permitAll() // Endpointy publiczne
                         .anyRequest().authenticated() // Wszystkie inne endpointy wymagają autoryzacji
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults())) // Uwierzytelnianie JWT

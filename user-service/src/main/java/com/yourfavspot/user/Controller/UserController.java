@@ -1,12 +1,12 @@
 package com.yourfavspot.user.Controller;
 
 import com.yourfavspot.common.AddLocationRequest;
+import com.yourfavspot.user.Model.LoginRequest;
+import com.yourfavspot.user.Model.LoginResponse;
 import com.yourfavspot.user.Model.UserDto;
-import com.yourfavspot.user.Model.UserRegistrationRequest;
 import com.yourfavspot.user.Service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
@@ -21,12 +21,24 @@ public class UserController {
 
     @PostMapping("/registerDto")
     public ResponseEntity<String> registerUser(@RequestBody UserDto userDto) {
+        //boolean success = userService.registerUserDto(userDto);
         boolean success = userService.registerUserDto(userDto);
         if (success) {
             return ResponseEntity.ok("User registered successfully");
         }
         else{
             return ResponseEntity.status(500).body("Registration failed");
+        }
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
+        try {
+            LoginResponse response = userService.loginUser(loginRequest);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Login failed", e);
+            return ResponseEntity.status(401).build();
         }
     }
 

@@ -1,5 +1,6 @@
 package com.yourfavspot.user.Service;
 
+import com.yourfavspot.user.Model.LoginResponse;
 import com.yourfavspot.user.Model.UserDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,13 +26,14 @@ public class KeycloakAdminClient {
     private final String adminPassword;
     private final String clientId;
 
+    //parametry admina wstrzykujemy za pomocą value z application.yml
     public KeycloakAdminClient(@Value("${keycloak.admin-url}") String adminUrl,
                                @Value("${keycloak.token-url}") String tokenUrl,
                                @Value("${keycloak.admin-username}") String adminUsername,
                                @Value("${keycloak.admin-password}") String adminPassword,
                                @Value("${keycloak.client-id}") String clientId,
                                WebClient.Builder webClientBuilder) {
-        this.webClient = webClientBuilder.baseUrl(adminUrl).build();
+        this.webClient = webClientBuilder.baseUrl(adminUrl).build(); //do komunikacji z administracyjnym api keyCloak
         this.tokenClient = webClientBuilder.build(); // używany do pobrania tokena
         this.tokenUrl = tokenUrl;
         this.adminUsername = adminUsername;
@@ -92,4 +94,33 @@ public class KeycloakAdminClient {
         }
         return false;
     }
+
+    public LoginResponse login(String username, String password) {
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("grant_type", "password");
+        formData.add("client_id", clientId);
+        formData.add("username", username);
+        formData.add("password", password);
+
+        try {
+            Map response = tokenClient.post()
+                    .uri(tokenUrl)
+                    .header("Content-Type", "application/x-www-form-urlencoded")
+                    .body(BodyInserters.fromFormData(formData))
+                    .retrieve()
+                    .bodyToMono(Map.class)
+                    .block();
+
+            return LoginResponse.builder()
+                    .accessToken((String) response.get("access_token"))
+                    .tokenType((String) response.get("token_type"))
+                    .build();
+        } catch (WebClientResponseException e) {
+            log.error("Login failed: {} - {}", e.getStatusCode(), e.getResponseBodyAsString());
+            throw new RuntimeException("Authentication failed");
+        }
+    }
+
+
+
 }

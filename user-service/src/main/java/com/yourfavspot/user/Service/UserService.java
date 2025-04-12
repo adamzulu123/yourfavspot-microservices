@@ -83,6 +83,15 @@ public class UserService {
         return true;
     }
 
+    public LoginResponse loginUser(LoginRequest loginRequest) {
+        return keycloakAdminClient.login(loginRequest.getUsername(), loginRequest.getPassword());
+    }
+
+
+
+
+
+
     //sychronicznie - klasyczna komunkacja - teraz nie działa bo kolejka uzywana jest do projectreactor
     public void checkAndAddFavoriteLocation(Integer userId, String locationId) {
         CheckLocationRequest request = new CheckLocationRequest(userId, locationId);

@@ -5,6 +5,13 @@ spring:
   application:
     name: gateway-service
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8091/realms/your-realm
+          jwk-set-uri: http://localhost:8091/realms/your-realm/protocol/openid-connect/certs
+
   cloud:
     gateway:
       routes:
