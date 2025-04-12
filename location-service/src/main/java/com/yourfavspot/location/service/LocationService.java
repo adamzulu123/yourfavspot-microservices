@@ -62,9 +62,13 @@ public class LocationService {
                     existingLocation.setName(locationModel.getName());
                     existingLocation.setDescription(locationModel.getDescription());
                     existingLocation.setCategory(locationModel.getCategory());
+                    existingLocation.setCountry(locationModel.getCountry());
+                    existingLocation.setCity(locationModel.getCity());
+                    existingLocation.setStreet(locationModel.getStreet());
+                    existingLocation.setPostalCode(locationModel.getPostalCode());
+                    existingLocation.setLocation(locationModel.getLocation());
                     existingLocation.setUpdatedAt(LocalDateTime.now());
                     return locationRepository.save(existingLocation);
-
                 })
                 .switchIfEmpty(Mono.empty())
                 .onErrorResume(e -> {

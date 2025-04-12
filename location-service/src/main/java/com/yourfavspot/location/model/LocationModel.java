@@ -29,6 +29,12 @@ public class LocationModel {
     private String name;
     private String description;
     private String category;
+
+    private String country;
+    private String city;
+    private String street;
+    private String postalCode;
+
     @GeoSpatialIndexed
     private double[] location;
     @CreatedDate

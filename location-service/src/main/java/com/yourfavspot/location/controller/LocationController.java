@@ -22,11 +22,11 @@ public class LocationController {
     private final LocationService locationService;
 
     @PostMapping("/create")
-    public Mono<ResponseEntity<LocationModel>> createLocation(@RequestBody LocationModel locationModel,
-                                                                @AuthenticationPrincipal Jwt jwt) {
+    public Mono<ResponseEntity<LocationModel>> createLocation(@RequestBody LocationModel locationModel){
 
-        String userId = jwt.getClaim("sub");  // No parsing needed, just use the string directly
-        locationModel.setUserId(userId);
+        //@AuthenticationPrincipal Jwt jwt
+        //String userId = jwt.getClaim("sub");  // No parsing needed, just use the string directly
+        //locationModel.setUserId(userId);
 
         return locationService.createLocation(locationModel)
                 //tworzymy status 201 (OK) i w cele zwracamy zapisany obiekt location
@@ -67,7 +67,7 @@ public class LocationController {
     }
 
     //prosty update nazwy, kategorii i opisu miejscówki
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public Mono<ResponseEntity<LocationModel>> updateLocation(@PathVariable("id") String id,
                                                               @RequestBody LocationModel locationModel) {
         return locationService.updateLocation(id, locationModel)
@@ -75,7 +75,6 @@ public class LocationController {
                         ? Mono.just(ResponseEntity.ok(updatedLocation))
                         : Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).build()));
     }
-
 
 
     //todo:
